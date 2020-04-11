@@ -1,10 +1,10 @@
-package com.thongkao.Aplication;
+package com.thongkao;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AplicationApplicationTests {
+class ThongkaoApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,0 +1,24 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+---
+spring:
+  profiles:
+    active: local # [local | dev | test | prod]
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    database: mysql
+    show-sql: false
+    properties:
+      hibernate.format_sql: true
+      hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+      hibernate.dialect.storage_engine: innodb
+
+    quartz:
+      job-store-type: jdbc
+      properties:
+        org-quartz-threadPool-threadCount: 5
