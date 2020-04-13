@@ -1,9 +1,10 @@
 package com.thongkao.controller;
 
 import com.thongkao.entity.Portfolio;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.thongkao.model.User;
+import com.thongkao.service.AdminService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
 
     @GetMapping("/portfolio/list")
     public List<Portfolio> listGoldenQuote() {
@@ -23,5 +27,10 @@ public class AdminController {
             list.add(portfolio);
         }
         return list;
+    }
+
+    @PostMapping("/app-user/create")
+    public void createAppUser(@RequestBody User user) {
+        adminService.createUser(user);
     }
 }

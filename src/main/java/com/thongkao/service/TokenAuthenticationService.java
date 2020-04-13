@@ -1,7 +1,11 @@
 package com.thongkao.service;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import java.io.IOException;
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
@@ -36,12 +40,21 @@ public class TokenAuthenticationService {
                 : null;
     }
 
-    public static void addAuthentication(HttpServletResponse res, Authentication auth) {
-        String JWT = Jwts.builder()
+    public static void addAuthentication(HttpServletResponse res, Authentication auth) throws IOException {
+        String token = Jwts.builder()
                 .setSubject(auth.getName())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SECRET_KEY)
                 .compact();
-        res.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + JWT);
+        JsonArray jsonArray = new JsonArray();
+        auth.getAuthorities().forEach(rule -> {
+            jsonArray.add(rule.toString());
+        });
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("token", token);
+        jsonObject.addProperty("name", auth.getName());
+        jsonObject.addProperty("rules", jsonArray.toString());
+        res.setStatus(HttpServletResponse.SC_OK);
+        res.getWriter().write(jsonObject.toString());
     }
 }

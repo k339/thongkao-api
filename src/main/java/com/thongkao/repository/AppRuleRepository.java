@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AppRuleRepository extends JpaRepository<AppRule, Long> {
+    AppRule findByRuleName(String ruleName);
 }

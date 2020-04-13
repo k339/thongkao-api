@@ -1,6 +1,7 @@
 package com.thongkao.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thongkao.exception.UserNotFoundException;
 import com.thongkao.model.UserLogin;
 import com.thongkao.service.TokenAuthenticationService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +37,11 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
                         Collections.emptyList()
                 )
         );
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        throw new UserNotFoundException();
     }
 
     @Override
