@@ -26,7 +26,8 @@ dependencies {
 	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 
 	compile 'io.jsonwebtoken:jjwt-api:0.11.1',
-			'mysql:mysql-connector-java:8.0.19'
+			'mysql:mysql-connector-java:8.0.19',
+			'com.google.code.gson:gson:2.8.6'
 
 	runtime 'io.jsonwebtoken:jjwt-impl:0.11.1',
 			'io.jsonwebtoken:jjwt-jackson:0.11.1'

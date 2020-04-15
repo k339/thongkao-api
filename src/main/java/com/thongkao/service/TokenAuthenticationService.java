@@ -1,23 +1,29 @@
 package com.thongkao.service;
 
-import com.google.gson.JsonArray;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
+import com.thongkao.model.LoginResponse;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.io.IOException;
 import java.security.Key;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
+
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class TokenAuthenticationService {
 
-    static final long EXPIRATION_TIME = 1000 * 30; // 30 seconds timeout
+    static final long EXPIRATION_TIME = (1000 * 60 * 60) * 24; // 1 day
     static final String HEADER_STRING = "Authorization";
     static final String TOKEN_PREFIX = "Bearer";
     static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
@@ -28,33 +34,48 @@ public class TokenAuthenticationService {
             return null;
         }
 
-        String username = Jwts.parserBuilder()
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
                 .build()
                 .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-                .getBody()
-                .getSubject();
-
+                .getBody();
+        String username = (String) claims.get("username");
+        List<String> rules = (List<String>) claims.get("rules");
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        rules.forEach(rule -> {
+            authorities.add(new SimpleGrantedAuthority(rule));
+        });
         return username != null ?
-                new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList())
+                new UsernamePasswordAuthenticationToken(username, null, authorities)
                 : null;
     }
 
     public static void addAuthentication(HttpServletResponse res, Authentication auth) throws IOException {
+        List<String> list = new ArrayList<>();
+        auth.getAuthorities().forEach(rule -> {
+            list.add(rule.toString());
+        });
         String token = Jwts.builder()
                 .setSubject(auth.getName())
+                .claim("rules", list.toString())
+                .claim("username", auth.getName())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SECRET_KEY)
                 .compact();
-        JsonArray jsonArray = new JsonArray();
-        auth.getAuthorities().forEach(rule -> {
-            jsonArray.add(rule.toString());
-        });
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("token", token);
-        jsonObject.addProperty("name", auth.getName());
-        jsonObject.addProperty("rules", jsonArray.toString());
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setToken(token);
+        loginResponse.setName(auth.getName());
+        loginResponse.setRules(list);
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = mapper.writeValueAsString(loginResponse);
         res.setStatus(HttpServletResponse.SC_OK);
+        res.getWriter().write(jsonString);
+    }
+
+    public static void loginUnSuccess(HttpServletResponse res, AuthenticationException failed) throws IOException {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("message", "Invalid username or password");
+        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         res.getWriter().write(jsonObject.toString());
     }
 }

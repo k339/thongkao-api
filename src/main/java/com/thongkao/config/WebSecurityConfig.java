@@ -24,12 +24,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.inMemoryAuthentication()
                 .withUser("username")
                 .password(passwordEncoder().encode("password"))
-                .authorities("ADMIN", "SUPER_ADMIN", "GOD_MAN");
+                .authorities("ADMIN", "WEB_MASTER");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests()
+        http.cors().and()
+                .csrf().disable()
+                .authorizeRequests()
                 .antMatchers("/portfolio/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
                 .anyRequest().authenticated()

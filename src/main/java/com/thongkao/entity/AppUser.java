@@ -1,5 +1,6 @@
 package com.thongkao.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class AppUser {
     @Column(name = "USERNAME")
     private String username;
 
+    @JsonIgnore
     @Column(name = "PASSWORD")
     private String password;
 

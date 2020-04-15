@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -24,6 +25,10 @@ public class AdminService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public List<AppUser> getAppUserList() {
+        return appUserRepository.findAll();
+    }
+
     public void createUser(User user) {
         AppUser appUser = new AppUser();
         appUser.setName(user.getName());
@@ -35,11 +40,5 @@ public class AdminService {
         });
         appUser.setAppRules(appRuleSet);
         appUserRepository.save(appUser);
-    }
-
-    public void mockAppRule() {
-        AppRule appRule = new AppRule();
-        appRule.setRuleName("ADMIN");
-        appRuleRepository.save(appRule);
     }
 }
