@@ -27,7 +27,9 @@ dependencies {
 
 	compile 'io.jsonwebtoken:jjwt-api:0.11.1',
 			'mysql:mysql-connector-java:8.0.19',
-			'com.google.code.gson:gson:2.8.6'
+			'com.google.code.gson:gson:2.8.6',
+			'commons-fileupload:commons-fileupload:1.4',
+			'commons-io:commons-io:2.6'
 
 	runtime 'io.jsonwebtoken:jjwt-impl:0.11.1',
 			'io.jsonwebtoken:jjwt-jackson:0.11.1'

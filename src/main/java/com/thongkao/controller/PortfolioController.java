@@ -13,14 +13,6 @@ public class PortfolioController {
 
     @GetMapping("/list")
     public List<Portfolio> listGoldenQuote() {
-        List<Portfolio> list = new ArrayList<>();
-        for(int i = 0; i < 10; i++) {
-            Portfolio portfolio = new Portfolio();
-            portfolio.setId((long) i);
-            portfolio.setTitle("Title " + i);
-            portfolio.setDetail("Detail " + i);
-            list.add(portfolio);
-        }
-        return list;
+        return new ArrayList<>();
     }
 }
