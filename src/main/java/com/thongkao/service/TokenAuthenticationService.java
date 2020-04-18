@@ -10,6 +10,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.IOException;
 import java.security.Key;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +26,7 @@ public class TokenAuthenticationService {
 
     static final long EXPIRATION_TIME = (1000 * 60 * 60) * 24; // 1 day
     static final String HEADER_STRING = "Authorization";
-    static final String TOKEN_PREFIX = "Bearer";
+    static final String TOKEN_PREFIX = "Bearer ";
     static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public static Authentication getAuthentication(HttpServletRequest req) {
@@ -39,15 +40,16 @@ public class TokenAuthenticationService {
                 .build()
                 .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
                 .getBody();
-        String username = (String) claims.get("username");
-        List<String> rules = (List<String>) claims.get("rules");
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        rules.forEach(rule -> {
-            authorities.add(new SimpleGrantedAuthority(rule));
-        });
-        return username != null ?
-                new UsernamePasswordAuthenticationToken(username, null, authorities)
-                : null;
+        if (claims != null) {
+            String username = (String) claims.get("username");
+            String rulesString = claims.get("rules", String.class);
+            List<String> rules = Arrays.asList(rulesString.split(","));
+            List<GrantedAuthority> authorities = rules.stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+            return new UsernamePasswordAuthenticationToken(username, null, authorities);
+        }
+        return null;
     }
 
     public static void addAuthentication(HttpServletResponse res, Authentication auth) throws IOException {
@@ -57,7 +59,7 @@ public class TokenAuthenticationService {
         });
         String token = Jwts.builder()
                 .setSubject(auth.getName())
-                .claim("rules", list.toString())
+                .claim("rules", String.join(",", list))
                 .claim("username", auth.getName())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SECRET_KEY)

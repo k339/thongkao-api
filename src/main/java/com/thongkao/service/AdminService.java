@@ -33,6 +33,7 @@ public class AdminService {
         AppUser appUser = new AppUser();
         appUser.setName(user.getName());
         appUser.setUsername(user.getUsername());
+        appUser.setEmail(user.getEmail());
         appUser.setPassword(passwordEncoder.encode(user.getPassword()));
         Set<AppRule> appRuleSet = new HashSet<>();
         user.getRules().forEach(rule -> {
