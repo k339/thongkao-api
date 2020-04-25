@@ -1,6 +1,5 @@
 package com.thongkao.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thongkao.entity.AppUser;
 import com.thongkao.entity.Portfolio;
 import com.thongkao.model.User;
@@ -37,6 +36,12 @@ public class AdminController {
     }
 
     @Secured({"ADMIN", "WEB_MASTER"})
+    @GetMapping(value = "/portfolio/{id}")
+    public Portfolio getPortfolio(@PathVariable(name = "id") Long id) {
+        return portfolioService.getPortfolio(id);
+    }
+
+    @Secured({"ADMIN", "WEB_MASTER"})
     @GetMapping(value = "/portfolio/list")
     public List<Portfolio> listPortfolio() {
         return portfolioService.getPortfolioList();
@@ -46,5 +51,17 @@ public class AdminController {
     @PostMapping(value = "/portfolio/create")
     public void createPortfolio(MultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
         portfolioService.createPortFolio(multipartHttpServletRequest);
+    }
+
+    @Secured({"ADMIN", "WEB_MASTER"})
+    @PostMapping(value = "/portfolio/update")
+    public void updatePortfolio(MultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
+        portfolioService.updatePortfolio(multipartHttpServletRequest);
+    }
+
+    @Secured({"ADMIN", "WEB_MASTER"})
+    @DeleteMapping(value = "/portfolio/delete/{id}")
+    public void deletePortfolio(@PathVariable(name = "id") Long id) {
+        portfolioService.deletePortfolio(id);
     }
 }

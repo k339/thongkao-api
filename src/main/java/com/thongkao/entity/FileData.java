@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Getter
@@ -14,7 +15,7 @@ import java.util.Date;
 @EqualsAndHashCode(exclude = {"portfolio"})
 @Table(name = "FILE_DATA")
 @Entity
-public class FileData {
+public class FileData implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -24,7 +25,7 @@ public class FileData {
     @DateTimeFormat(pattern = "dd/MM/yyyy hh:mm:ss")
     private Date createDate;
     @Column(name = "NAME")
-    private String NAME;
+    private String name;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PORTFOLIO_ID")

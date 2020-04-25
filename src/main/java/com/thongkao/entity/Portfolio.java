@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @Table(name = "PORTFOLIO")
-public class Portfolio {
+public class Portfolio implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -24,6 +25,8 @@ public class Portfolio {
     private String customer;
     @Column(name = "DESCRIPTION")
     private String description;
+    @Column(name = "PIN_ORDER")
+    private Long pinOrder;
     @OrderBy("createDate")
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<FileData> files = new HashSet<>();
