@@ -2,6 +2,7 @@ package com.thongkao.config;
 
 import com.thongkao.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,12 +19,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private LoginService loginService;
 
+    @Value("${user-admin}")
+    private String userAdmin;
+
+    @Value("${password-admin}")
+    private String passwordAdmin;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(loginService).passwordEncoder(passwordEncoder());
         auth.inMemoryAuthentication()
-                .withUser("username")
-                .password(passwordEncoder().encode("password"))
+                .withUser(userAdmin)
+                .password(passwordEncoder().encode(passwordAdmin))
                 .authorities("ADMIN", "WEB_MASTER");
     }
 
