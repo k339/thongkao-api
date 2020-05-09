@@ -41,8 +41,7 @@ public class PortfolioService {
         portfolio.setCustomer(portfolioData.getCustomer());
         portfolio.setDescription(portfolioData.getDescription());
         portfolio.setPinOrder(new Date().getTime());
-
-        Set<FileData> fileDataSet = new HashSet<>();
+        portfolioRepository.save(portfolio);
 
         int totalImage = portfolioData.getTotalImage();
         for (int i = 0; i < totalImage; i++) {
@@ -51,11 +50,8 @@ public class PortfolioService {
             fileData.setCreateDate(new Date());
             fileData.setName(fileName);
             fileData.setPortfolio(portfolio);
-            fileDataSet.add(fileData);
+            fileDataRepository.save(fileData);
         }
-
-        portfolio.setFiles(fileDataSet);
-        portfolioRepository.save(portfolio);
     }
 
     public void updatePortfolio(MultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
